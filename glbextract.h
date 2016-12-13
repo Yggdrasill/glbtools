@@ -10,4 +10,9 @@ struct FATable {
   char filename[MAX_FILENAME_LEN];
 };
 
+union Bytes {
+  uint32_t  read32;
+  uint8_t   read8[4];
+};
+
 const uint8_t DEFAULT_KEY = "32768GLB";
