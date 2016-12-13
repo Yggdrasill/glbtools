@@ -16,4 +16,4 @@ union Bytes {
   uint8_t   read8[4];
 };
 
-const uint8_t DEFAULT_KEY = "32768GLB";
+const uint8_t *DEFAULT_KEY = "32768GLB";
