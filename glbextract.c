@@ -13,6 +13,29 @@ int calculate_key_pos(size_t len)
   return 25 % len;
 }
 
+uint32_t decrypt_uint32(struct State *state, uint32_t data32)
+{
+  uint8_t *current_byte;
+  uint8_t *prev_byte;
+  uint8_t *key_pos;
+  uint8_t *data8;
+
+  current_byte = &state->current_byte;
+  prev_byte = &state->prev_byte;
+  key_pos = &state->key_pos;
+  data8 = (char *)&data32;
+
+  for(int i = 0; i < READ8_MAX; i++) {
+    *current_byte = data8[i];
+    data8[i] = (*current_byte) - *(DEFAULT_KEY + *key_pos) - (*prev_byte);
+    data8[i] &= 0xFF;
+    *key_pos = ++(*key_pos) % strlen(DEFAULT_KEY);
+    *prev_byte = (*current_byte);
+  }
+
+  return data32;
+}
+
 int main(void)
 {
   FILE *glb;
