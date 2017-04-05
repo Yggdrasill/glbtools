@@ -73,6 +73,24 @@ int main(void)
     return 1;
   }
 
+  state.key_pos = calculate_key_pos(strlen(DEFAULT_KEY) );
+  state.key_pos += READ8_MAX;
+  state.prev_byte = bytes.read8[READ8_MAX - 1];
+
+  /* We don't bother decrypting the previous 4 bytes, since we know they're all
+   * zeroed out
+   */
+
+  memcpy(bytes.read8, buffer + fpos, READ8_MAX );
+  fpos += READ8_MAX;
+
+  for(int i = 0; i < strlen(DEFAULT_KEY); i++)
+    printf("%x\n", DEFAULT_KEY[i]);
+
+  bytes.read32 = decrypt_uint32(&state, bytes.read32);
+
+  printf("Found %d files\n", bytes.read32);
+
   free(buffer);
 
   return 0;
