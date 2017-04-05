@@ -51,18 +51,17 @@ int main(void)
   size_t fpos;
 
   uint8_t *buffer;
-  uint8_t prev_byte;
-  uint8_t key_pos;
 
   stat("FILE0000.GLB", &st);
 
-  filesize = st.st_size;
-  position = 0;
-  buffer = calloc(filesize, sizeof(*buffer) );
-  fread(buffer, 1, filesize, glb);
+  fsize = st.st_size;
+  fpos = 0;
+  buffer = calloc(fsize, sizeof(*buffer) );
+  fread(buffer, 1, fsize, glb);
   fclose(glb);
 
-  memcpy(bytes.read8, buffer, 4);
+  memcpy(bytes.read8, buffer + fpos, READ8_MAX);
+  fpos += READ8_MAX;
 
   /* First 4 bytes of file are always the same. They first 4 bytes are always
    * zero, but because they're encrypted, they always have the specific bit
