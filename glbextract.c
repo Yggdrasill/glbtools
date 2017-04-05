@@ -20,6 +20,7 @@ int main(void)
   glb = fopen("FILE0000.GLB", "rb");
 
   struct FATable fat = {0};
+  struct State state = {0};
   struct stat st;
   union Bytes bytes = {0};
 
