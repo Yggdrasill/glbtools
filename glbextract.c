@@ -8,6 +8,11 @@
 
 #include "glbextract.h"
 
+int calculate_key_pos(size_t len)
+{
+  return 25 % len;
+}
+
 int main(void)
 {
   FILE *glb;
