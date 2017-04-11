@@ -23,9 +23,4 @@ struct State {
   uint8_t key_pos;
 };
 
-union Bytes {
-  uint32_t  read32;
-  uint8_t   read8[4];
-};
-
 const uint8_t *DEFAULT_KEY = "32768GLB";

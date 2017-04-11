@@ -134,7 +134,6 @@ int main(void)
   struct FATable fat = {0};
   struct State state = {0};
   struct Buffer *mem_buffer = mem_buffer_init("file0000.glb");
-  union Bytes bytes = {0};
 
   if(strncmp(RAW_HEADER, mem_buffer->buffer, RAW_HEADER_LEN) ) {
     printf("Not a GLB file!\n");
