@@ -12,6 +12,7 @@ struct FATable {
 };
 
 struct Buffer {
+  FILE    *glb;
   size_t  length;
   size_t  position;
   char    *buffer;

@@ -77,6 +77,7 @@ struct Buffer *mem_buffer_init(const char *path)
   }
 
   glb = fopen(path, "rb");
+  mem_buffer->glb = glb;
 
   if(!glb) {
     errsv = errno;
@@ -106,13 +107,13 @@ struct Buffer *mem_buffer_init(const char *path)
   }
 
   fread(mem_buffer->buffer, 1, mem_buffer->length, glb);
-  fclose(glb);
 
   return mem_buffer;
 }
 
 void mem_buffer_free(struct Buffer **mem_buffer)
 {
+  fclose( (*mem_buffer)->glb);
   free( (*mem_buffer)->buffer);
   free(*mem_buffer);
   *mem_buffer = NULL;
