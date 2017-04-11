@@ -36,6 +36,72 @@ uint32_t decrypt_uint32(struct State *state, uint32_t data32)
   return data32;
 }
 
+struct Buffer *mem_buffer_init(const char *path)
+{
+  FILE *glb;
+  struct stat st;
+  struct Buffer *mem_buffer;
+
+  mem_buffer = malloc(sizeof(*mem_buffer) );
+  glb = fopen(path, "rb");
+  stat(path, &st);
+
+  mem_buffer->length =  st.st_size;
+  mem_buffer->position = 0;
+  mem_buffer->buffer = malloc(st.st_size);
+
+  fread(mem_buffer->buffer, 1, mem_buffer->length, glb);
+  fclose(glb);
+
+  return mem_buffer;
+}
+
+void mem_buffer_free(struct Buffer **mem_buffer)
+{
+  free( (*mem_buffer)->buffer);
+  free(*mem_buffer);
+  *mem_buffer = NULL;
+
+  return;
+}
+
+size_t mem_buffer_read(struct Buffer *mem_buffer, void *dest, size_t nmemb)
+{
+  size_t retval;
+
+  retval = 0;
+
+  if(mem_buffer->position + nmemb < mem_buffer->length) {
+    memcpy(dest, mem_buffer->buffer + mem_buffer->position, nmemb);
+
+    mem_buffer->position += nmemb;
+    retval = nmemb;
+  }
+
+  return retval;
+}
+
+int mem_buffer_relative_seek(struct Buffer *mem_buffer, long long target)
+{
+  if(mem_buffer->position + target > mem_buffer->length ||
+      (target > mem_buffer->position && target < 0) ) {
+    return -1;
+  }
+
+  mem_buffer->position += target;
+
+  return 0;
+}
+
+int mem_buffer_absolute_seek(struct Buffer *mem_buffer, size_t target)
+{
+  if(mem_buffer->position + target > mem_buffer->length) return -1;
+
+  mem_buffer->position = target;
+
+  return 0;
+}
+
 int main(void)
 {
   FILE *glb;
