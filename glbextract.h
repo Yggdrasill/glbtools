@@ -24,3 +24,4 @@ struct State {
 };
 
 const char *DEFAULT_KEY = "32768GLB";
+int errsv;

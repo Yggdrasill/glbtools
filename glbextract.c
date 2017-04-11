@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <errno.h>
 #include "glbextract.h"
 
 int calculate_key_pos(size_t len)
@@ -70,12 +70,40 @@ struct Buffer *mem_buffer_init(const char *path)
   struct Buffer *mem_buffer;
 
   mem_buffer = malloc(sizeof(*mem_buffer) );
+
+  if(!mem_buffer) {
+    errsv = errno;
+    return NULL;
+  }
+
   glb = fopen(path, "rb");
-  stat(path, &st);
+
+  if(!glb) {
+    errsv = errno;
+    free(mem_buffer);
+
+    return NULL;
+  }
+
+  if(stat(path, &st) ) {
+    errsv = errno;
+    free(mem_buffer);
+    fclose(glb);
+
+    return NULL;
+  }
 
   mem_buffer->length =  st.st_size;
   mem_buffer->position = 0;
   mem_buffer->buffer = malloc(st.st_size);
+
+  if(!mem_buffer->buffer) {
+    errsv = errno;
+    free(mem_buffer);
+    fclose(glb);
+
+    return NULL;
+  }
 
   fread(mem_buffer->buffer, 1, mem_buffer->length, glb);
   fclose(glb);
@@ -129,31 +157,43 @@ int mem_buffer_absolute_seek(struct Buffer *mem_buffer, size_t target)
   return 0;
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
-  struct FATable fat = {0};
+  struct FATable hfat = {0};
   struct State state = {0};
-  struct Buffer *mem_buffer = mem_buffer_init("file0000.glb");
+  struct Buffer *mem_buffer;
+
+  if(argc < 2) {
+    puts("No file to decrypt!");
+    return 3;
+  }
+
+  mem_buffer = mem_buffer_init(argv[1]);
+
+  if(!mem_buffer) {
+    printf("%s: %s\n", argv[0], strerror(errsv) );
+    return 2;
+  }
 
   if(strncmp(RAW_HEADER, mem_buffer->buffer, RAW_HEADER_LEN) ) {
-    printf("Not a GLB file!\n");
+    puts("Not a GLB file!");
     return 1;
   }
 
   reset_state(&state);
 
-  mem_buffer_read(mem_buffer, &fat.flags, READ8_MAX);
-  mem_buffer_read(mem_buffer, &fat.offset, READ8_MAX);
-  mem_buffer_read(mem_buffer, &fat.length, READ8_MAX);
-  mem_buffer_read(mem_buffer, &fat.filename, MAX_FILENAME_LEN);
+  mem_buffer_read(mem_buffer, &hfat.flags, READ8_MAX);
+  mem_buffer_read(mem_buffer, &hfat.offset, READ8_MAX);
+  mem_buffer_read(mem_buffer, &hfat.length, READ8_MAX);
+  mem_buffer_read(mem_buffer, &hfat.filename, MAX_FILENAME_LEN);
 
-  decrypt_uint32(&state, &fat.flags);
-  decrypt_uint32(&state, &fat.offset);
-  decrypt_uint32(&state, &fat.length);
-  decrypt_filename(&state, fat.filename);
+  decrypt_uint32(&state, &hfat.flags);
+  decrypt_uint32(&state, &hfat.offset);
+  decrypt_uint32(&state, &hfat.length);
+  decrypt_filename(&state, hfat.filename);
 
-  printf("%d %d %s\n", fat.flags, fat.length, fat.filename);
-  printf("Found %d files\n", fat.offset);
+  printf("%d %d %s\n", hfat.flags, hfat.length, hfat.filename);
+  printf("Found %d files\n", hfat.offset);
 
   mem_buffer_free(&mem_buffer);
 
