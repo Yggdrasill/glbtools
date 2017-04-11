@@ -11,6 +11,12 @@ struct FATable {
   char filename[MAX_FILENAME_LEN];
 };
 
+struct Buffer {
+  size_t  length;
+  size_t  position;
+  char    *buffer;
+};
+
 struct State {
   uint8_t current_byte;
   uint8_t prev_byte;
