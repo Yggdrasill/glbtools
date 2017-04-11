@@ -18,9 +18,9 @@ struct Buffer {
 };
 
 struct State {
-  uint8_t current_byte;
-  uint8_t prev_byte;
+  char current_byte;
+  char prev_byte;
   uint8_t key_pos;
 };
 
-const uint8_t *DEFAULT_KEY = "32768GLB";
+const char *DEFAULT_KEY = "32768GLB";

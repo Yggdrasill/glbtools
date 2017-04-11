@@ -23,15 +23,15 @@ void reset_state(struct State *state)
 
 static int decrypt_varlen(struct State *state, void *data, size_t size)
 {
-  uint8_t *current_byte;
-  uint8_t *prev_byte;
+  char *current_byte;
+  char *prev_byte;
+  char *byte_data;
   uint8_t *key_pos;
-  uint8_t *byte_data;
 
   current_byte = &state->current_byte;
   prev_byte = &state->prev_byte;
   key_pos = &state->key_pos;
-  byte_data = (uint8_t *)data;
+  byte_data = (char *)data;
 
   int i;
   for(i = 0; i < size; i++) {
