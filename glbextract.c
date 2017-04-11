@@ -13,27 +13,46 @@ int calculate_key_pos(size_t len)
   return 25 % len;
 }
 
-uint32_t decrypt_uint32(struct State *state, uint32_t data32)
+static int decrypt_varlen(struct State *state, void *data, size_t size)
 {
   uint8_t *current_byte;
   uint8_t *prev_byte;
   uint8_t *key_pos;
-  uint8_t *data8;
+  uint8_t *byte_data;
 
   current_byte = &state->current_byte;
   prev_byte = &state->prev_byte;
   key_pos = &state->key_pos;
-  data8 = (char *)&data32;
+  byte_data = (uint8_t *)data;
 
-  for(int i = 0; i < READ8_MAX; i++) {
-    *current_byte = data8[i];
-    data8[i] = (*current_byte) - *(DEFAULT_KEY + *key_pos) - (*prev_byte);
-    data8[i] &= 0xFF;
-    *key_pos = ++(*key_pos) % strlen(DEFAULT_KEY);
-    *prev_byte = (*current_byte);
+  int i;
+  for(i = 0; i < size; i++) {
+    *current_byte = byte_data[i];
+    byte_data[i] = *current_byte - DEFAULT_KEY[*key_pos] - *prev_byte;
+    byte_data[i] &= 0xFF;
+    (*key_pos)++;
+    *key_pos %= strlen(DEFAULT_KEY);
+    *prev_byte = *current_byte;
   }
 
-  return data32;
+  return i;
+}
+
+int decrypt_uint32(struct State *state, uint32_t *data32)
+{
+  return decrypt_varlen(state, data32, READ8_MAX);
+}
+
+int decrypt_filename(struct State *state, char *str)
+{
+  *(str + MAX_FILENAME_LEN - 1) = '\0';
+  return decrypt_varlen(state, str, MAX_FILENAME_LEN - 1);
+}
+
+int decrypt_file(struct State *state, char *str, size_t length)
+{
+  *(str + length) = '\0';
+  return decrypt_varlen(state, str, length - 1);
 }
 
 struct Buffer *mem_buffer_init(const char *path)
@@ -104,60 +123,33 @@ int mem_buffer_absolute_seek(struct Buffer *mem_buffer, size_t target)
 
 int main(void)
 {
-  FILE *glb;
-
-  glb = fopen("FILE0000.GLB", "rb");
-
   struct FATable fat = {0};
   struct State state = {0};
-  struct stat st;
+  struct Buffer *mem_buffer = mem_buffer_init("file0000.glb");
   union Bytes bytes = {0};
 
-  size_t fsize;
-  size_t fpos;
-
-  uint8_t *buffer;
-
-  stat("FILE0000.GLB", &st);
-
-  fsize = st.st_size;
-  fpos = 0;
-  buffer = calloc(fsize, sizeof(*buffer) );
-  fread(buffer, 1, fsize, glb);
-  fclose(glb);
-
-  memcpy(bytes.read8, buffer + fpos, READ8_MAX);
-  fpos += READ8_MAX;
-
-  /* First 4 bytes of file are always the same. They first 4 bytes are always
-   * zero, but because they're encrypted, they always have the specific bit
-   * pattern defined in RAW_HEADER
-   */
-
-  if(strncmp(RAW_HEADER, bytes.read8, RAW_HEADER_LEN) ) {
+  if(strncmp(RAW_HEADER, mem_buffer->buffer, RAW_HEADER_LEN) ) {
     printf("Not a GLB file!\n");
     return 1;
   }
 
   state.key_pos = calculate_key_pos(strlen(DEFAULT_KEY) );
-  state.key_pos += READ8_MAX;
-  state.prev_byte = bytes.read8[READ8_MAX - 1];
+  state.prev_byte = DEFAULT_KEY[state.key_pos];
 
-  /* We don't bother decrypting the previous 4 bytes, since we know they're all
-   * zeroed out
-   */
+  mem_buffer_read(mem_buffer, &fat.flags, READ8_MAX);
+  mem_buffer_read(mem_buffer, &fat.offset, READ8_MAX);
+  mem_buffer_read(mem_buffer, &fat.length, READ8_MAX);
+  mem_buffer_read(mem_buffer, &fat.filename, MAX_FILENAME_LEN);
 
-  memcpy(bytes.read8, buffer + fpos, READ8_MAX );
-  fpos += READ8_MAX;
+  decrypt_uint32(&state, &fat.flags);
+  decrypt_uint32(&state, &fat.offset);
+  decrypt_uint32(&state, &fat.length);
+  decrypt_filename(&state, fat.filename);
 
-  for(int i = 0; i < strlen(DEFAULT_KEY); i++)
-    printf("%x\n", DEFAULT_KEY[i]);
+  printf("%d %d %s\n", fat.flags, fat.length, fat.filename);
+  printf("Found %d files\n", fat.offset);
 
-  bytes.read32 = decrypt_uint32(&state, bytes.read32);
-
-  printf("Found %d files\n", bytes.read32);
-
-  free(buffer);
+  mem_buffer_free(&mem_buffer);
 
   return 0;
 }
