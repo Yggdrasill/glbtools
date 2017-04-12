@@ -247,7 +247,6 @@ int main(int argc, char **argv)
   mem_buffer_read_fat(mem_buffer, &hfat);
   decrypt_fat(&state, &hfat);
 
-  printf("%d %d %s\n", hfat.flags, hfat.length, hfat.filename);
   printf("Found %d files\n", hfat.offset);
 
   mem_buffer_free(&mem_buffer);
