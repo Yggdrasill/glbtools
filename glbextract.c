@@ -125,10 +125,12 @@ struct Buffer *mem_buffer_init(const char *path)
 
 void mem_buffer_free(struct Buffer **mem_buffer)
 {
-  fclose( (*mem_buffer)->glb);
-  free( (*mem_buffer)->buffer);
-  free(*mem_buffer);
-  *mem_buffer = NULL;
+  if(*mem_buffer) {
+    fclose( (*mem_buffer)->glb);
+    free( (*mem_buffer)->buffer);
+    free(*mem_buffer);
+    *mem_buffer = NULL;
+  }
 
   return;
 }
