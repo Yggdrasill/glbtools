@@ -186,7 +186,7 @@ int main(int argc, char **argv)
   mem_buffer_read(mem_buffer, &hfat.flags, READ8_MAX);
   mem_buffer_read(mem_buffer, &hfat.offset, READ8_MAX);
   mem_buffer_read(mem_buffer, &hfat.length, READ8_MAX);
-  mem_buffer_read(mem_buffer, &hfat.filename, MAX_FILENAME_LEN);
+  mem_buffer_read(mem_buffer, hfat.filename, MAX_FILENAME_LEN);
 
   decrypt_uint32(&state, &hfat.flags);
   decrypt_uint32(&state, &hfat.offset);
