@@ -187,6 +187,38 @@ int mem_buffer_absolute_seek(struct Buffer *mem_buffer, size_t target)
   return 0;
 }
 
+struct FATable *file_list_init(uint32_t nfiles)
+{
+  struct FATable *ffat;
+
+  ffat = malloc(sizeof(*ffat) * nfiles);
+
+  return ffat;
+}
+
+void file_list_free(struct FATable **ffat)
+{
+  if(ffat) free(*ffat);
+  *ffat = NULL;
+
+  return;
+}
+
+void file_list_print(struct FATable *ffat, uint32_t nfiles)
+{
+  for(int i = 0; i < nfiles; i++) {
+    if(ffat[i].filename[0] == '\0') {
+      printf("%*d", -MAX_FILENAME_LEN, i);
+    } else {
+      printf("%*s", -MAX_FILENAME_LEN, ffat[i].filename);
+    }
+
+    printf("%c %d bytes\n", ffat[i].flags ? 'E' : 'N', ffat[i].length);
+  }
+
+  return;
+}
+
 int main(int argc, char **argv)
 {
   struct FATable hfat = {0};
