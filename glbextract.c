@@ -61,6 +61,8 @@ int decrypt_fat(struct State *state, struct FATable *fat)
 {
   int retval;
 
+  reset_state(state);
+
   retval = decrypt_uint32(state, &fat->flags);
   retval += decrypt_uint32(state, &fat->offset);
   retval += decrypt_uint32(state, &fat->length);
