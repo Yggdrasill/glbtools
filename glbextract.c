@@ -223,7 +223,9 @@ int main(int argc, char **argv)
 {
   struct FATable hfat = {0};
   struct State state = {0};
-  struct Buffer *mem_buffer;
+
+  struct FATable *ffat = {0};
+  struct Buffer *mem_buffer = {0};
 
   if(argc < 2) {
     puts("No file to decrypt!");
@@ -249,7 +251,21 @@ int main(int argc, char **argv)
 
   printf("Found %d files\n", hfat.offset);
 
+  ffat = file_list_init(hfat.offset);
+
+  if(!ffat) {
+    perror(NULL);
+  }
+
+  for(int i = 0; i < hfat.offset; i++) {
+    mem_buffer_read_fat(mem_buffer, ffat + i);
+    decrypt_fat(&state, ffat + i);
+  }
+
+  file_list_print(ffat, hfat.offset);
+
   mem_buffer_free(&mem_buffer);
+  file_list_free(&ffat);
 
   return 0;
 }
