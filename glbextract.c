@@ -133,7 +133,8 @@ void mem_buffer_free(struct Buffer **mem_buffer)
   return;
 }
 
-size_t mem_buffer_read(struct Buffer *mem_buffer, void *dest, size_t nmemb)
+size_t mem_buffer_read_varlen(struct Buffer *mem_buffer,
+                              void *dest, size_t nmemb)
 {
   size_t retval;
 
@@ -145,6 +146,18 @@ size_t mem_buffer_read(struct Buffer *mem_buffer, void *dest, size_t nmemb)
     mem_buffer->position += nmemb;
     retval = nmemb;
   }
+
+  return retval;
+}
+
+size_t mem_buffer_read_fat(struct Buffer *mem_buffer, struct FATable *fat)
+{
+  size_t retval;
+
+  retval = mem_buffer_read_varlen(mem_buffer, &fat->flags, READ8_MAX);
+  retval += mem_buffer_read_varlen(mem_buffer, &fat->offset, READ8_MAX);
+  retval += mem_buffer_read_varlen(mem_buffer, &fat->length, READ8_MAX);
+  retval += mem_buffer_read_varlen(mem_buffer, fat->filename, MAX_FILENAME_LEN);
 
   return retval;
 }
@@ -195,10 +208,7 @@ int main(int argc, char **argv)
 
   reset_state(&state);
 
-  mem_buffer_read(mem_buffer, &hfat.flags, READ8_MAX);
-  mem_buffer_read(mem_buffer, &hfat.offset, READ8_MAX);
-  mem_buffer_read(mem_buffer, &hfat.length, READ8_MAX);
-  mem_buffer_read(mem_buffer, hfat.filename, MAX_FILENAME_LEN);
+  mem_buffer_read_fat(mem_buffer, &hfat);
   decrypt_fat(&state, &hfat);
 
   printf("%d %d %s\n", hfat.flags, hfat.length, hfat.filename);
