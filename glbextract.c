@@ -57,6 +57,18 @@ int decrypt_filename(struct State *state, char *str)
   return decrypt_varlen(state, str, MAX_FILENAME_LEN - 1);
 }
 
+int decrypt_fat(struct State *state, struct FATable *fat)
+{
+  int retval;
+
+  retval = decrypt_uint32(state, &fat->flags);
+  retval += decrypt_uint32(state, &fat->offset);
+  retval += decrypt_uint32(state, &fat->length);
+  retval += decrypt_filename(state, fat->filename);
+
+  return retval;
+}
+
 int decrypt_file(struct State *state, char *str, size_t length)
 {
   *(str + length) = '\0';
@@ -187,11 +199,7 @@ int main(int argc, char **argv)
   mem_buffer_read(mem_buffer, &hfat.offset, READ8_MAX);
   mem_buffer_read(mem_buffer, &hfat.length, READ8_MAX);
   mem_buffer_read(mem_buffer, hfat.filename, MAX_FILENAME_LEN);
-
-  decrypt_uint32(&state, &hfat.flags);
-  decrypt_uint32(&state, &hfat.offset);
-  decrypt_uint32(&state, &hfat.length);
-  decrypt_filename(&state, hfat.filename);
+  decrypt_fat(&state, &hfat);
 
   printf("%d %d %s\n", hfat.flags, hfat.length, hfat.filename);
   printf("Found %d files\n", hfat.offset);
