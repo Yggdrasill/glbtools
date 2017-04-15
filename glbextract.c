@@ -77,65 +77,7 @@ int decrypt_file(struct State *state, char *str, size_t length)
   return decrypt_varlen(state, str, length - 1);
 }
 
-struct Buffer *mem_buffer_init(const char *path)
-{
-  FILE *glb;
-  struct stat st;
-  struct Buffer *mem_buffer;
 
-  mem_buffer = malloc(sizeof(*mem_buffer) );
-
-  if(!mem_buffer) {
-    errsv = errno;
-    return NULL;
-  }
-
-  glb = fopen(path, "rb");
-  mem_buffer->glb = glb;
-
-  if(!glb) {
-    errsv = errno;
-    free(mem_buffer);
-
-    return NULL;
-  }
-
-  if(stat(path, &st) ) {
-    errsv = errno;
-    free(mem_buffer);
-    fclose(glb);
-
-    return NULL;
-  }
-
-  mem_buffer->length =  st.st_size;
-  mem_buffer->position = 0;
-  mem_buffer->buffer = malloc(st.st_size);
-
-  if(!mem_buffer->buffer) {
-    errsv = errno;
-    free(mem_buffer);
-    fclose(glb);
-
-    return NULL;
-  }
-
-  fread(mem_buffer->buffer, 1, mem_buffer->length, glb);
-
-  return mem_buffer;
-}
-
-void mem_buffer_free(struct Buffer **mem_buffer)
-{
-  if(*mem_buffer) {
-    fclose( (*mem_buffer)->glb);
-    free( (*mem_buffer)->buffer);
-    free(*mem_buffer);
-    *mem_buffer = NULL;
-  }
-
-  return;
-}
 
 size_t mem_buffer_read_varlen(struct Buffer *mem_buffer,
                               void *dest, size_t nmemb)
