@@ -77,58 +77,6 @@ int decrypt_file(struct State *state, char *str, size_t length)
   return decrypt_varlen(state, str, length - 1);
 }
 
-
-
-size_t mem_buffer_read_varlen(struct Buffer *mem_buffer,
-                              void *dest, size_t nmemb)
-{
-  size_t retval;
-
-  retval = 0;
-
-  if(mem_buffer->position + nmemb < mem_buffer->length) {
-    memcpy(dest, mem_buffer->buffer + mem_buffer->position, nmemb);
-
-    mem_buffer->position += nmemb;
-    retval = nmemb;
-  }
-
-  return retval;
-}
-
-size_t mem_buffer_read_fat(struct Buffer *mem_buffer, struct FATable *fat)
-{
-  size_t retval;
-
-  retval = mem_buffer_read_varlen(mem_buffer, &fat->flags, READ8_MAX);
-  retval += mem_buffer_read_varlen(mem_buffer, &fat->offset, READ8_MAX);
-  retval += mem_buffer_read_varlen(mem_buffer, &fat->length, READ8_MAX);
-  retval += mem_buffer_read_varlen(mem_buffer, fat->filename, MAX_FILENAME_LEN);
-
-  return retval;
-}
-
-int mem_buffer_relative_seek(struct Buffer *mem_buffer, long long target)
-{
-  if(mem_buffer->position + target > mem_buffer->length ||
-      (target > mem_buffer->position && target < 0) ) {
-    return -1;
-  }
-
-  mem_buffer->position += target;
-
-  return 0;
-}
-
-int mem_buffer_absolute_seek(struct Buffer *mem_buffer, size_t target)
-{
-  if(mem_buffer->position + target > mem_buffer->length) return -1;
-
-  mem_buffer->position = target;
-
-  return 0;
-}
-
 struct FATable *file_list_init(uint32_t nfiles)
 {
   struct FATable *ffat;
