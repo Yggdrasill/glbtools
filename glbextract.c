@@ -145,7 +145,7 @@ int decrypt_file(struct State *state, char *str, size_t length)
   return decrypt_varlen(state, str, length - 1);
 }
 
-struct FATable *file_list_init(uint32_t nfiles)
+struct FATable *fat_array_init(uint32_t nfiles)
 {
   struct FATable *ffat;
 
@@ -154,10 +154,12 @@ struct FATable *file_list_init(uint32_t nfiles)
   return ffat;
 }
 
-void file_list_free(struct FATable **ffat)
+void fat_array_free(struct FATable **ffat)
 {
-  if(ffat) free(*ffat);
-  *ffat = NULL;
+  if(ffat) {
+    free(*ffat);
+    *ffat = NULL;
+  }
 
   return;
 }
@@ -209,7 +211,7 @@ int main(int argc, char **argv)
 
   printf("Found %d files\n", hfat.offset);
 
-  ffat = file_list_init(hfat.offset);
+  ffat = fat_array_init(hfat.offset);
 
   if(!ffat) {
     perror(NULL);
@@ -222,8 +224,7 @@ int main(int argc, char **argv)
 
   file_list_print(ffat, hfat.offset);
 
-  mem_buffer_free(&mem_buffer);
-  file_list_free(&ffat);
+  fat_array_free(&ffat);
 
   return 0;
 }
