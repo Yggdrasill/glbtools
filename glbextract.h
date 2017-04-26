@@ -13,6 +13,7 @@
                   "-e\textract specific comma-separated files in archive"
 
 struct FATable {
+  uint32_t extract;
   uint32_t flags;
   uint32_t offset;
   uint32_t length;
