@@ -178,6 +178,7 @@ int decrypt_fat_many(struct State *state,
 
 int decrypt_file(struct State *state, char *str, size_t length)
 {
+  reset_state(state);
   *(str + length) = '\0';
   return decrypt_varlen(state, str, length - 1);
 }
