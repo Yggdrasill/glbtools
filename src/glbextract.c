@@ -27,10 +27,10 @@
 #include <errno.h>
 #include <error.h>
 
-#include "glb_const.h"
-#include "fat.h"
-#include "crypt.h"
-#include "glbextract.h"
+#include "../include/glb_const.h"
+#include "../include/fat.h"
+#include "../include/crypt.h"
+#include "../include/glbextract.h"
 
 int strcompar(const void *s1, const void *s2)
 {

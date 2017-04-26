@@ -21,9 +21,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "glb_const.h"
-#include "fat.h"
-#include "crypt.h"
+#include "../include/glb_const.h"
+#include "../include/fat.h"
+#include "../include/crypt.h"
 
 static int decrypt_varlen(struct State *state, void *data, size_t size)
 {

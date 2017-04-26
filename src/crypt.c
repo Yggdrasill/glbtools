@@ -21,7 +21,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "crypt.h"
+#include "../include/crypt.h"
 
 int calculate_key_pos(size_t len)
 {
