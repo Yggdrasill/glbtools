@@ -284,6 +284,7 @@ struct FATable *fat_find_largest(struct FATable *ffat, uint32_t nfiles)
 int main(int argc, char **argv)
 {
   FILE *glb;
+  FILE *out;
 
   struct FATable hfat = {0};
   struct FATable *ffat = {0};
@@ -294,7 +295,7 @@ int main(int argc, char **argv)
   ssize_t bytes;
 
   int arg_mask;
-  int fd;
+  int rd, wd;
 
   char *buffer;
   buffer = NULL;
@@ -362,6 +363,45 @@ int main(int argc, char **argv)
 
   if(arg_mask & ARGS_LIST) fat_array_print(ffat, hfat.offset);
 
+  if(arg_mask & (ARGS_EXTA | ARGS_EXTS) ) {
+    fat_flag_extraction(ffat, &tokens, hfat.offset, arg_mask);
+
+    largest = fat_find_largest(ffat, hfat.offset);
+
+    buffer = realloc(buffer, largest->length);
+
+    if(!buffer) {
+      die(argv[optind]);
+    }
+
+    for(uint32_t i = 0; i < hfat.offset &&
+        (arg_mask & (ARGS_EXTA | ARGS_EXTS) ); i++) {
+
+      if(!ffat[i].extract) continue;
+
+      bytes = pread(fd, buffer, ffat[i].length, ffat[i].offset);
+      if(bytes == -1) {
+        die(argv[optind]);
+      } else if (bytes != ffat[i].length) {
+        warn("Bytes read not equal to file length", ffat[i].filename);
+      }
+
+      out = fopen(ffat[i].filename, "wb");
+      if(!out) die(ffat[i].filename);
+      wd = fileno(out);
+
+      if(ffat[i].flags) decrypt_file(&state, buffer, ffat[i].length);
+
+      bytes = write(wd, buffer, ffat[i].length);
+      if(bytes == -1) {
+        die(ffat[i].filename);
+      } else if(bytes != ffat[i].length) {
+        warn("Bytes written not equal to file length", ffat[i].filename);
+      }
+
+      fclose(out);
+    }
+  }
 
   free(buffer);
   fclose(glb);
