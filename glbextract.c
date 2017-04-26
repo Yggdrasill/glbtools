@@ -89,6 +89,20 @@ int args_parse(int argc, char **argv, struct Tokens *tokens)
   return mask;
 }
 
+char *buffer_copy_fat(struct FATable *fat, char *buffer)
+{
+  memcpy(&fat->flags, buffer, READ8_MAX);
+  buffer += READ8_MAX;
+  memcpy(&fat->offset, buffer, READ8_MAX);
+  buffer += READ8_MAX;
+  memcpy(&fat->length, buffer, READ8_MAX);
+  buffer += READ8_MAX;
+  memcpy(fat->filename, buffer, MAX_FILENAME_LEN);
+  buffer += MAX_FILENAME_LEN;
+
+  return buffer;
+}
+
 static int decrypt_varlen(struct State *state, void *data, size_t size)
 {
   char *current_byte;
@@ -125,7 +139,7 @@ int decrypt_filename(struct State *state, char *str)
   return decrypt_varlen(state, str, MAX_FILENAME_LEN - 1);
 }
 
-int decrypt_fat(struct State *state, struct FATable *fat)
+int decrypt_fat_single(struct State *state, struct FATable *fat)
 {
   int retval;
 
@@ -135,6 +149,29 @@ int decrypt_fat(struct State *state, struct FATable *fat)
   retval += decrypt_uint32(state, &fat->offset);
   retval += decrypt_uint32(state, &fat->length);
   retval += decrypt_filename(state, fat->filename);
+
+  return retval;
+}
+
+int decrypt_fat_many(struct State *state,
+                    struct FATable *ffat,
+                    char *buffer,
+                    uint32_t nfiles)
+{
+  struct FATable *end;
+
+  char *newptr;
+
+  int retval;
+
+  end = ffat + nfiles;
+  retval = 0;
+
+  for( ; ffat < end; ffat++) {
+    newptr = buffer_copy_fat(ffat, buffer);
+    retval += decrypt_fat_single(state, ffat);
+    buffer = newptr;
+  }
 
   return retval;
 }
