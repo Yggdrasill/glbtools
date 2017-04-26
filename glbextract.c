@@ -317,14 +317,14 @@ int main(int argc, char **argv)
     die(argv[optind]);
   }
 
-  fd = fileno(glb);
+  rd = fileno(glb);
   buffer = malloc(FAT_SIZE);
 
   if(!buffer) {
     die(argv[0]);
   }
 
-  bytes = pread(fd, buffer, FAT_SIZE, 0);
+  bytes = pread(rd, buffer, FAT_SIZE, 0);
 
   if(bytes == -1) {
     die(argv[optind]);
@@ -350,7 +350,7 @@ int main(int argc, char **argv)
     die(argv[0]);
   }
 
-  bytes = pread(fd, buffer, hfat.offset * FAT_SIZE, FAT_SIZE);
+  bytes = pread(rd, buffer, hfat.offset * FAT_SIZE, FAT_SIZE);
 
   if(bytes == -1) {
     die(argv[optind]);
@@ -379,7 +379,7 @@ int main(int argc, char **argv)
 
       if(!ffat[i].extract) continue;
 
-      bytes = pread(fd, buffer, ffat[i].length, ffat[i].offset);
+      bytes = pread(rd, buffer, ffat[i].length, ffat[i].offset);
       if(bytes == -1) {
         die(argv[optind]);
       } else if (bytes != ffat[i].length) {
