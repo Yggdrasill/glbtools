@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <error.h>
 #include "glbextract.h"
 
 int calculate_key_pos(size_t len)
@@ -19,6 +20,73 @@ void reset_state(struct State *state)
   state->prev_byte = DEFAULT_KEY[state->key_pos];
 
   return;
+}
+
+void die(const char *str)
+{
+  error(errno ? errno : EXIT_FAILURE, errno, "%s", str ? str : "");
+
+  return;
+}
+
+void warn(const char *str, const char *filename)
+{
+  fprintf(stderr, "warn: %s %s\n", str, filename);
+
+  return;
+}
+
+void print_usage(char *name)
+{
+  printf("%s %s\n", name, HELP_TEXT);
+
+  return;
+}
+
+void args_tokenize(char *arg, struct Tokens *tokens)
+{
+  char *last;
+  int i;
+
+  i = 0;
+  while(i < MAX_FILES && (tokens->table[i] = strtok_r(arg, ",", &last) ) ) {
+    tokens->ntokens++;
+    arg = NULL;
+    i++;
+  }
+
+  return;
+}
+
+int args_parse(int argc, char **argv, struct Tokens *tokens)
+{
+  int arg;
+  int mask;
+
+  mask = 0;
+
+  while( (arg = getopt(argc, argv, "hlxe:") ) != -1) {
+    switch(arg) {
+      case 'l':
+        mask |= ARGS_LIST;
+        break;
+      case 'x':
+        mask |= ARGS_EXTA;
+        break;
+      case 'e':
+        mask |= ARGS_EXTS;
+        args_tokenize(optarg, tokens);
+        break;
+      case 'h':
+      default:
+        print_usage(argv[0]);
+        exit(EXIT_FAILURE);
+    }
+  }
+
+  if(arg == -1 && argc == 2) mask = ARGS_LIST;
+
+  return mask;
 }
 
 static int decrypt_varlen(struct State *state, void *data, size_t size)
