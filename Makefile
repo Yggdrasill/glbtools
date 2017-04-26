@@ -1,5 +1,6 @@
 all:
-	${CC} glbextract.c fat.c crypt.c decrypt.c -o glbextract
+	+${MAKE} -C src/
+	mv src/glbextract .
 
 clean:
 	rm glbextract

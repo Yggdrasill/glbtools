@@ -23,9 +23,9 @@
 #include <stdint.h>
 #include <search.h>
 
-#include "glb_const.h"
-#include "fat.h"
-#include "glbextract.h"
+#include "../include/glb_const.h"
+#include "../include/fat.h"
+#include "../include/glbextract.h"
 
 char *buffer_copy_fat(struct FATable *fat, char *buffer)
 {
