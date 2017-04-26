@@ -283,49 +283,88 @@ struct FATable *fat_find_largest(struct FATable *ffat, uint32_t nfiles)
 
 int main(int argc, char **argv)
 {
-  struct FATable hfat = {0};
-  struct State state = {0};
+  FILE *glb;
 
+  struct FATable hfat = {0};
   struct FATable *ffat = {0};
-  struct Buffer *mem_buffer = {0};
+  struct FATable *largest = {0};
+  struct State state = {0};
+  struct Tokens tokens = {0};
+
+  ssize_t bytes;
+
+  int arg_mask;
+  int fd;
+
+  char *buffer;
+  buffer = NULL;
 
   if(argc < 2) {
-    puts("No file to decrypt!");
-    return 3;
+    print_usage(argv[0]);
+    die("Too few arguments");
   }
 
-  mem_buffer = mem_buffer_init(argv[1]);
+  arg_mask = args_parse(argc, argv, &tokens);
 
-  if(!mem_buffer) {
-    printf("%s: %s\n", argv[0], strerror(errsv) );
-    return 2;
+  if(!argv[optind]) {
+    die("No input file");
   }
 
-  if(strncmp(RAW_HEADER, mem_buffer->buffer, RAW_HEADER_LEN) ) {
-    puts("Not a GLB file!");
-    return 1;
+  glb = fopen(argv[optind], "rb");
+
+  if(!glb) {
+    die(argv[optind]);
+  }
+
+  fd = fileno(glb);
+  buffer = malloc(FAT_SIZE);
+
+  if(!buffer) {
+    die(argv[0]);
+  }
+
+  bytes = pread(fd, buffer, FAT_SIZE, 0);
+
+  if(bytes == -1) {
+    die(argv[optind]);
+  } else if(bytes != FAT_SIZE) {
+    die("Couldn't read header FAT. Giving up.");
+  } else if(strncmp(RAW_HEADER, buffer, READ8_MAX) ) {
+    die("Not a GLB file!");
   }
 
   reset_state(&state);
-
-  mem_buffer_read_fat(mem_buffer, &hfat);
-  decrypt_fat(&state, &hfat);
-
-  printf("Found %d files\n", hfat.offset);
+  buffer_copy_fat(&hfat, buffer);
+  decrypt_fat_single(&state, &hfat);
 
   ffat = fat_array_init(hfat.offset);
 
   if(!ffat) {
-    perror(NULL);
+    die(argv[0]);
   }
 
-  for(int i = 0; i < hfat.offset; i++) {
-    mem_buffer_read_fat(mem_buffer, ffat + i);
-    decrypt_fat(&state, ffat + i);
+  buffer = realloc(buffer, hfat.offset * FAT_SIZE);
+
+  if(!buffer) {
+    die(argv[0]);
   }
 
-  file_list_print(ffat, hfat.offset);
+  bytes = pread(fd, buffer, hfat.offset * FAT_SIZE, FAT_SIZE);
 
+  if(bytes == -1) {
+    die(argv[optind]);
+  } else if(bytes != hfat.offset * FAT_SIZE) {
+    die("Couldn't read file allocation tables. Giving up.");
+  }
+
+  decrypt_fat_many(&state, ffat, buffer, hfat.offset);
+  fat_names_fix(ffat, hfat.offset);
+
+  if(arg_mask & ARGS_LIST) fat_array_print(ffat, hfat.offset);
+
+
+  free(buffer);
+  fclose(glb);
   fat_array_free(&ffat);
 
   return 0;
