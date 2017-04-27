@@ -26,11 +26,6 @@
                   "-x\textract all files in archive\n" \
                   "-e\textract specific comma-separated files in archive"
 
-struct Tokens {
-  char *table[MAX_FILES];
-  size_t ntokens;
-};
-
 void die(const char *);
 void warn(const char *, const char *);
 void print_usage(const char *);

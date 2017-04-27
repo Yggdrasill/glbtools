@@ -28,6 +28,11 @@
 #define MAX_FILENAME_LEN  16
 #define FAT_SIZE          28
 
+struct Tokens {
+  char *table[MAX_FILES];
+  size_t ntokens;
+};
+
 enum ARGS {
   ARGS_LIST = 0x01,
   ARGS_EXTA = 0x02,
