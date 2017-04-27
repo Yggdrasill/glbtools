@@ -31,7 +31,6 @@ struct Tokens {
   size_t ntokens;
 };
 
-int strcompar(const void *, const void *);
 void die(const char *);
 void warn(const char *, const char *);
 void print_usage(const char *);
