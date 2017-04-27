@@ -32,11 +32,6 @@
 #include "../include/crypt.h"
 #include "../include/glbextract.h"
 
-int strcompar(const void *s1, const void *s2)
-{
-  return strcmp(*(char **)s1, *(char **)s2);
-}
-
 void die(const char *str)
 {
   error(errno ? errno : EXIT_FAILURE, errno, "%s", str ? str : "");
