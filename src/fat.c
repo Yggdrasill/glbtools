@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <search.h>
 
-#include "../include/glb_const.h"
+#include "../include/glb.h"
 #include "../include/fat.h"
 #include "../include/glbextract.h"
 
