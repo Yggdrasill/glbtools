@@ -144,7 +144,6 @@ int main(int argc, char **argv)
     die("Not a GLB file!");
   }
 
-  reset_state(&state);
   buffer_copy_fat(&hfat, buffer);
   decrypt_fat_single(&state, &hfat);
 
