@@ -17,7 +17,6 @@
  * along with glbextract.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 

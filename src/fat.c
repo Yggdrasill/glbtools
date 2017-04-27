@@ -25,7 +25,6 @@
 
 #include "../include/glb.h"
 #include "../include/fat.h"
-#include "../include/glbextract.h"
 
 int strcompar(const void *s1, const void *s2)
 {
