@@ -21,7 +21,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../include/glb_const.h"
+#include "../include/glb.h"
 #include "../include/fat.h"
 #include "../include/crypt.h"
 
