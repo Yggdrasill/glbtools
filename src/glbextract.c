@@ -108,13 +108,11 @@ int main(int argc, char **argv)
   struct State state = {0};
   struct Tokens tokens = {0};
 
-  ssize_t bytes;
+  char *buffer;
 
+  ssize_t bytes;
   int arg_mask;
   int rd, wd;
-
-  char *buffer;
-  buffer = NULL;
 
   if(argc < 2) {
     print_usage(argv[0]);
@@ -122,26 +120,22 @@ int main(int argc, char **argv)
   }
 
   arg_mask = args_parse(argc, argv, &tokens);
-
   if(!argv[optind]) {
     die("No input file");
   }
 
   glb = fopen(argv[optind], "rb");
-
   if(!glb) {
     die(argv[optind]);
   }
-
   rd = fileno(glb);
-  buffer = malloc(FAT_SIZE);
 
+  buffer = malloc(FAT_SIZE);
   if(!buffer) {
     die(argv[0]);
   }
 
   bytes = pread(rd, buffer, FAT_SIZE, 0);
-
   if(bytes == -1) {
     die(argv[optind]);
   } else if(bytes != FAT_SIZE) {
@@ -155,19 +149,16 @@ int main(int argc, char **argv)
   decrypt_fat_single(&state, &hfat);
 
   ffat = fat_array_init(hfat.offset);
-
   if(!ffat) {
     die(argv[0]);
   }
 
   buffer = realloc(buffer, hfat.offset * FAT_SIZE);
-
   if(!buffer) {
     die(argv[0]);
   }
 
   bytes = pread(rd, buffer, hfat.offset * FAT_SIZE, FAT_SIZE);
-
   if(bytes == -1) {
     die(argv[optind]);
   } else if(bytes != hfat.offset * FAT_SIZE) {
@@ -183,9 +174,7 @@ int main(int argc, char **argv)
     fat_flag_extraction(ffat, &tokens, hfat.offset, arg_mask);
 
     largest = fat_find_largest(ffat, hfat.offset);
-
     buffer = realloc(buffer, largest->length);
-
     if(!buffer) {
       die(argv[optind]);
     }
