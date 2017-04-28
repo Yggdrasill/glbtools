@@ -17,6 +17,9 @@
  * along with glbextract.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define POSIXLY_CORRECT
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdint.h>
 #include <string.h>
 
