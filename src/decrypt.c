@@ -51,7 +51,7 @@ static int decrypt_varlen(struct State *state, void *data, size_t size)
 
 int decrypt_uint32(struct State *state, uint32_t *data32)
 {
-  return decrypt_varlen(state, data32, READ8_MAX);
+  return decrypt_varlen(state, data32, INT32_SIZE);
 }
 
 int decrypt_filename(struct State *state, char *str)

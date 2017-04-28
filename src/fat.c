@@ -33,12 +33,12 @@ int strcompar(const void *s1, const void *s2)
 
 char *buffer_copy_fat(struct FATable *fat, char *buffer)
 {
-  memcpy(&fat->flags, buffer, READ8_MAX);
-  buffer += READ8_MAX;
-  memcpy(&fat->offset, buffer, READ8_MAX);
-  buffer += READ8_MAX;
-  memcpy(&fat->length, buffer, READ8_MAX);
-  buffer += READ8_MAX;
+  memcpy(&fat->flags, buffer, INT32_SIZE);
+  buffer += INT32_SIZE;
+  memcpy(&fat->offset, buffer, INT32_SIZE);
+  buffer += INT32_SIZE;
+  memcpy(&fat->length, buffer, INT32_SIZE);
+  buffer += INT32_SIZE;
   memcpy(fat->filename, buffer, MAX_FILENAME_LEN);
   buffer += MAX_FILENAME_LEN;
 

@@ -140,7 +140,7 @@ int main(int argc, char **argv)
     die(argv[optind]);
   } else if(bytes != FAT_SIZE) {
     die("Couldn't read header FAT. Giving up.");
-  } else if(strncmp(RAW_HEADER, buffer, READ8_MAX) ) {
+  } else if(strncmp(RAW_HEADER, buffer, INT32_SIZE) ) {
     die("Not a GLB file!");
   }
 

@@ -22,7 +22,7 @@
 
 #define RAW_HEADER "\x64\x9B\xD1\x09"
 
-#define READ8_MAX         4
+#define INT32_SIZE        4
 #define RAW_HEADER_LEN    (sizeof(RAW_HEADER) - 1)
 #define MAX_FILES         4096
 #define MAX_FILENAME_LEN  16
