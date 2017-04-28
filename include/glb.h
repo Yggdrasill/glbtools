@@ -17,8 +17,8 @@
  * along with glbextract.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GLB_CONST_H
-#define GLB_CONST_H
+#ifndef GLB_H
+#define GLB_H
 
 #define RAW_HEADER "\x64\x9B\xD1\x09"
 
