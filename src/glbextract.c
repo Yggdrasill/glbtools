@@ -30,11 +30,15 @@
 #include "../include/crypt.h"
 #include "../include/glbextract.h"
 
-void die(const char *str)
+void die(const char *str, unsigned int linenum)
 {
-  error(errno ? errno : EXIT_FAILURE, errno, "%s", str ? str : "");
+  error_at_line(errno, errno, __FILE__, linenum, "%s", str);
+}
 
-  return;
+void term(const char *str)
+{
+  fprintf(stderr, "error: %s\n", str);
+  exit(EXIT_FAILURE);
 }
 
 void warn(const char *str, const char *filename)
@@ -116,32 +120,32 @@ int main(int argc, char **argv)
 
   if(argc < 2) {
     print_usage(argv[0]);
-    die("Too few arguments");
+    term(ERR_NOARGS);
   }
 
   arg_mask = args_parse(argc, argv, &tokens);
   if(!argv[optind]) {
-    die("No input file");
+    term(ERR_NOFILE);
   }
 
   glb = fopen(argv[optind], "rb");
   if(!glb) {
-    die(argv[optind]);
+    die(argv[optind], __LINE__);
   }
   rd = fileno(glb);
 
   buffer = malloc(FAT_SIZE);
   if(!buffer) {
-    die(argv[0]);
+    die(DIE_NOMEM, __LINE__);
   }
 
   bytes = pread(rd, buffer, FAT_SIZE, 0);
   if(bytes == -1) {
-    die(argv[optind]);
+    die(argv[optind], __LINE__);
   } else if(bytes != FAT_SIZE) {
-    die("Couldn't read header FAT. Giving up.");
+    term(ERR_CRHFAT);
   } else if(strncmp(RAW_HEADER, buffer, INT32_SIZE) ) {
-    die("Not a GLB file!");
+    term(ERR_NOTGLB);
   }
 
   buffer_copy_fat(&hfat, buffer);
@@ -149,19 +153,19 @@ int main(int argc, char **argv)
 
   ffat = fat_array_init(hfat.offset);
   if(!ffat) {
-    die(argv[0]);
+    die(DIE_NOMEM, __LINE__);
   }
 
   buffer = realloc(buffer, hfat.offset * FAT_SIZE);
   if(!buffer) {
-    die(argv[0]);
+    die(DIE_NOMEM, __LINE__);
   }
 
   bytes = pread(rd, buffer, hfat.offset * FAT_SIZE, FAT_SIZE);
   if(bytes == -1) {
-    die(argv[optind]);
+    die(argv[optind], __LINE__);
   } else if(bytes != hfat.offset * FAT_SIZE) {
-    die("Couldn't read file allocation tables. Giving up.");
+    term(ERR_CRFFAT);
   }
 
   decrypt_fat_many(&state, ffat, buffer, hfat.offset);
@@ -175,7 +179,7 @@ int main(int argc, char **argv)
     largest = fat_find_largest(ffat, hfat.offset);
     buffer = realloc(buffer, largest->length);
     if(!buffer) {
-      die(argv[optind]);
+      die(argv[optind], __LINE__);
     }
 
     for(uint32_t i = 0; i < hfat.offset &&
@@ -185,22 +189,22 @@ int main(int argc, char **argv)
 
       bytes = pread(rd, buffer, ffat[i].length, ffat[i].offset);
       if(bytes == -1) {
-        die(argv[optind]);
+        die(argv[optind], __LINE__);
       } else if (bytes != ffat[i].length) {
-        warn("Bytes read not equal to file length", ffat[i].filename);
+        warn(WARN_RNEL, ffat[i].filename);
       }
 
       out = fopen(ffat[i].filename, "wb");
-      if(!out) die(ffat[i].filename);
+      if(!out) die(ffat[i].filename, __LINE__);
       wd = fileno(out);
 
       if(ffat[i].flags) decrypt_file(&state, buffer, ffat[i].length);
 
       bytes = write(wd, buffer, ffat[i].length);
       if(bytes == -1) {
-        die(ffat[i].filename);
+        die(ffat[i].filename, __LINE__);
       } else if(bytes != ffat[i].length) {
-        warn("Bytes written not equal to file length", ffat[i].filename);
+        warn(WARN_WNEL, ffat[i].filename);
       }
 
       fclose(out);
