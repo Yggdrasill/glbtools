@@ -115,6 +115,7 @@ int main(int argc, char **argv)
   char *buffer;
 
   ssize_t bytes;
+  uint32_t i;
   int arg_mask;
   int rd, wd;
 
@@ -182,8 +183,7 @@ int main(int argc, char **argv)
       die(argv[optind], __LINE__);
     }
 
-    for(uint32_t i = 0; i < hfat.offset &&
-        (arg_mask & (ARGS_EXTA | ARGS_EXTS) ); i++) {
+    for(i = 0; i < hfat.offset && (arg_mask & (ARGS_EXTA | ARGS_EXTS) ); i++) {
 
       if(!ffat[i].extract) continue;
 

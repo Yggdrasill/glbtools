@@ -31,12 +31,13 @@ static int decrypt_varlen(struct State *state, void *data, size_t size)
   char *byte_data;
   uint8_t *key_pos;
 
+  size_t i;
+
   current_byte = &state->current_byte;
   prev_byte = &state->prev_byte;
   key_pos = &state->key_pos;
   byte_data = (char *)data;
 
-  size_t i;
   for(i = 0; i < size; i++) {
     *current_byte = byte_data[i];
     byte_data[i] = *current_byte - DEFAULT_KEY[*key_pos] - *prev_byte;
