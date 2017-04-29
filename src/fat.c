@@ -26,6 +26,9 @@
 #include <stdint.h>
 #include <search.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include "../include/glb.h"
 #include "../include/fat.h"
 
@@ -67,6 +70,28 @@ void fat_array_free(struct FATable **ffat)
   return;
 }
 
+int fat_entry_init(struct FATable *fat, char *path, uint32_t offset)
+{
+  struct stat st;
+
+  size_t len;
+
+  if(stat(path, &st) ) {
+    return -1;
+  }
+
+  fat->flags = 0;
+  fat->offset = offset;
+  fat->length = st.st_size;
+
+  len = strlen(path);
+  if(len > MAX_FILENAME_LEN) path += len - MAX_FILENAME_LEN + 1;
+
+  strncpy(fat->filename, path, MAX_FILENAME_LEN);
+
+  return 0;
+}
+
 void fat_names_fix(struct FATable *ffat, uint32_t nfiles)
 {
   struct FATable *end;
@@ -105,6 +130,33 @@ void fat_flag_extraction(struct FATable *ffat,
       ffat->extract = 1;
     } else {
       ffat->extract = 0;
+    }
+  }
+
+  return;
+}
+
+void fat_flag_encryption(struct FATable *ffat,
+                        struct Tokens *tokens,
+                        uint32_t nfiles,
+                        int arg_mask)
+{
+  struct FATable *end;
+
+  char **result;
+  char *str;
+
+  end = ffat + nfiles;
+
+  for( ; ffat < end; ffat++) {
+    str = ffat->filename;
+    result = lfind(&str, tokens->table, &tokens->ntokens,
+                  sizeof(*tokens->table), strcompar);
+
+    if(result || (arg_mask & ARGS_ENCA) ) {
+      ffat->flags = 1;
+    } else {
+      ffat->flags = 0;
     }
   }
 
