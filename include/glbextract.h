@@ -20,10 +20,6 @@
 #ifndef GLBEXTRACT_H
 #define GLBEXTRACT_H
 
-void die(const char *, unsigned int);
-void warn(const char *, const char *);
-void print_usage(const char *);
-void args_tokenize(char *, struct Tokens *);
 int args_parse(int, char **, struct Tokens *);
 
 #endif

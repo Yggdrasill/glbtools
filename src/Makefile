@@ -1,2 +1,2 @@
 all:
-	${CC} glbextract.c fat.c crypt.c decrypt.c -o glbextract
+	${CC} glbextract.c fat.c crypt.c decrypt.c glb.c -o glbextract
