@@ -30,7 +30,6 @@ struct FATable {
   char filename[MAX_FILENAME_LEN];
 };
 
-int strcompar(const void *, const void *);
 char *buffer_copy_fat(struct FATable *, char *);
 struct FATable *fat_array_init(uint32_t);
 void fat_array_free(struct FATable **);

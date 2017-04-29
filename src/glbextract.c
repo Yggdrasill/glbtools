@@ -33,46 +33,6 @@
 #include "../include/crypt.h"
 #include "../include/glbextract.h"
 
-void die(const char *str, unsigned int linenum)
-{
-  error_at_line(errno, errno, __FILE__, linenum, "%s", str);
-}
-
-void term(const char *str)
-{
-  fprintf(stderr, "error: %s\n", str);
-  exit(EXIT_FAILURE);
-}
-
-void warn(const char *str, const char *filename)
-{
-  fprintf(stderr, "warn: %s %s\n", str, filename);
-
-  return;
-}
-
-void print_usage(const char *name)
-{
-  printf("%s %s\n", name, HELP_EXTRACT);
-
-  return;
-}
-
-void args_tokenize(char *arg, struct Tokens *tokens)
-{
-  char *last;
-  int i;
-
-  i = 0;
-  while(i < MAX_FILES && (tokens->table[i] = strtok_r(arg, ",", &last) ) ) {
-    tokens->ntokens++;
-    arg = NULL;
-    i++;
-  }
-
-  return;
-}
-
 int args_parse(int argc, char **argv, struct Tokens *tokens)
 {
   int arg;
@@ -94,7 +54,7 @@ int args_parse(int argc, char **argv, struct Tokens *tokens)
         break;
       case 'h':
       default:
-        print_usage(argv[0]);
+        print_usage(argv[0], HELP_EXTRACT);
         exit(EXIT_FAILURE);
     }
   }
@@ -123,7 +83,7 @@ int main(int argc, char **argv)
   int rd, wd;
 
   if(argc < 2) {
-    print_usage(argv[0]);
+    print_usage(argv[0], HELP_EXTRACT);
     term(ERR_NOARGS);
   }
 

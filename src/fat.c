@@ -32,11 +32,6 @@
 #include "../include/glb.h"
 #include "../include/fat.h"
 
-int strcompar(const void *s1, const void *s2)
-{
-  return strcmp(*(char **)s1, *(char **)s2);
-}
-
 char *buffer_copy_fat(struct FATable *fat, char *buffer)
 {
   memcpy(&fat->flags, buffer, INT32_SIZE);
