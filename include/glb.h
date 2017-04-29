@@ -53,9 +53,12 @@ struct Tokens {
 };
 
 enum ARGS {
-  ARGS_LIST = 0x01,
-  ARGS_EXTA = 0x02,
-  ARGS_EXTS = 0x04
+  ARGS_LIST = 1<<0,
+  ARGS_EXTA = 1<<1,
+  ARGS_EXTS = 1<<2,
+  ARGS_NAME = 1<<3,
+  ARGS_ENCA = 1<<4,
+  ARGS_ENCS = 1<<5
 };
 
 #endif

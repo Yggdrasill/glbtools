@@ -34,8 +34,10 @@ int strcompar(const void *, const void *);
 char *buffer_copy_fat(struct FATable *, char *);
 struct FATable *fat_array_init(uint32_t);
 void fat_array_free(struct FATable **);
+int fat_entry_init(struct FATable *, char *path, uint32_t offset);
 void fat_names_fix(struct FATable *, uint32_t);
 void fat_flag_extraction(struct FATable *, struct Tokens *, uint32_t, int);
+void fat_flag_encryption(struct FATable *, struct Tokens *, uint32_t, int);
 void fat_array_print(struct FATable *, uint32_t);
 struct FATable *fat_find_largest(struct FATable *, uint32_t);
 
