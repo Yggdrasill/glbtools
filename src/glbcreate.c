@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 
   if(num_files <= 0) {
     term(ERR_NOFILE);
-  } else if(num_files >= 4096) {
+  } else if(num_files >= MAX_FILES) {
     term(ERR_TMFILE);
   }
 
