@@ -53,7 +53,7 @@ void warn(const char *str, const char *filename)
 
 void print_usage(const char *name)
 {
-  printf("%s %s\n", name, HELP_TEXT);
+  printf("%s %s\n", name, HELP_EXTRACT);
 
   return;
 }

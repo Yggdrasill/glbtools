@@ -20,23 +20,6 @@
 #ifndef GLBEXTRACT_H
 #define GLBEXTRACT_H
 
-#define HELP_TEXT   "[ARGS...] [FILE]\n" \
-                    "-h\tprint this help text\n" \
-                    "-l\tprint list of files in archive\n" \
-                    "-x\textract all files in archive\n" \
-                    "-e\textract specific comma-separated files in archive"
-
-#define ERR_NOARGS  "Too few arguments"
-#define ERR_NOFILE  "No input file"
-#define ERR_CRHFAT  "Couldn't read header FAT"
-#define ERR_NOTGLB  "Not a GLB file"
-#define ERR_CRFFAT  "Couldn't read file allocation tables"
-
-#define DIE_NOMEM   "malloc() call failed"
-
-#define WARN_RNEL   "Bytes read not equal to file length"
-#define WARN_WNEL   "Bytes written not equal to file length"
-
 void die(const char *, unsigned int);
 void warn(const char *, const char *);
 void print_usage(const char *);
