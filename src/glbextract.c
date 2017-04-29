@@ -186,7 +186,7 @@ int main(int argc, char **argv)
       die(argv[optind], __LINE__);
     }
 
-    for(i = 0; i < hfat.offset && (arg_mask & (ARGS_EXTA | ARGS_EXTS) ); i++) {
+    for(i = 0; i < hfat.offset; i++) {
 
       if(!ffat[i].extract) continue;
 
