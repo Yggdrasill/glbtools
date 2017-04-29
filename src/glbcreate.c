@@ -96,7 +96,7 @@ int main(int argc, char **argv)
   struct FATable temp = {0};
   struct FATable *ffat = {0};
 
-  char *files[MAX_FILENAME_LEN];
+  char *files[MAX_FILES];
   char *buffer;
   char *filename;
 
