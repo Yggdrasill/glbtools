@@ -28,6 +28,13 @@
                       "-x\textract all files in archive\n" \
                       "-e\textract specific comma-separated files in archive"
 
+#define HELP_CREATE   "[ARGS...] [FILES...]\n" \
+                      "-h\tprint this help text\n" \
+                      "-o\tspecify name of output file\n" \
+                      "-a\tencrypt all files" \
+                      "-e\tencrypt specific comma-separated files,\n" \
+                      "  \timplicitly adds files to archive\n"
+
 #define ERR_NOARGS    "Too few arguments"
 #define ERR_NOFILE    "No input file"
 #define ERR_TMFILE    "Too many files"
