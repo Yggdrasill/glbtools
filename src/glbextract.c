@@ -115,6 +115,10 @@ int main(int argc, char **argv)
   buffer_copy_fat(&hfat, buffer);
   decrypt_fat_single(&state, &hfat);
 
+  if(hfat.offset > MAX_FILES) {
+    term(ERR_TMFILE);
+  }
+
   ffat = fat_array_init(hfat.offset);
   if(!ffat) {
     die(DIE_NOMEM, __LINE__);
