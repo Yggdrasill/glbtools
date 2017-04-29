@@ -191,4 +191,3 @@ struct FATable *fat_find_largest(struct FATable *ffat, uint32_t nfiles)
 
   return largest;
 }
-
