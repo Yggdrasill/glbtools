@@ -40,4 +40,11 @@ int decrypt_fat_single(struct State *, struct FATable *);
 int decrypt_fat_many(struct State *, struct FATable *, char *, uint32_t);
 int decrypt_file(struct State *, char *, size_t length);
 
+static int encrypt_varlen(struct State *, void *, size_t);
+int encrypt_uint32(struct State *, uint32_t *);
+int encrypt_filename(struct State *, char *);
+int encrypt_fat_single(struct State *, struct FATable *);
+int encrypt_fat_many(struct State *, struct FATable *, char *, uint32_t);
+int encrypt_file(struct State *, char *, size_t);
+
 #endif
