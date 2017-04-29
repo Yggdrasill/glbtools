@@ -31,7 +31,7 @@
 #define HELP_CREATE   "[ARGS...] [FILES...]\n" \
                       "-h\tprint this help text\n" \
                       "-o\tspecify name of output file\n" \
-                      "-a\tencrypt all files" \
+                      "-a\tencrypt all files\n" \
                       "-e\tencrypt specific comma-separated files,\n" \
                       "  \timplicitly adds files to archive\n"
 
