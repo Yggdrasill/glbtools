@@ -91,9 +91,11 @@ void tokens_truncate(struct Tokens *tokens)
   return;
 }
 
-int verify_files(char **argv, char **files, int nfiles)
+int add_args(char **argv, char **files, int nfiles)
 {
   int i;
+
+  if(nfiles > MAX_FILES) return nfiles;
 
   for(i = 0; i < MAX_FILES && i < nfiles && nfiles; i++) {
     if(access(argv[i], F_OK) ) {
@@ -107,48 +109,53 @@ int verify_files(char **argv, char **files, int nfiles)
   return nfiles;
 }
 
-int fix_missing(struct Tokens *tokens, char **files, int nfiles)
+int add_tokens(struct Tokens *tokens, char **files, int nfiles)
 {
   int i;
-  int retval;
-
-  retval = nfiles;
-
-  for(i = 0; i < MAX_FILES && i < tokens->ntokens; i++) {
-    if(access(tokens->table[i], F_OK) ) {
-      warn(WARN_NENT, tokens->table[i]);
-    } else {
-      files[nfiles + i] = tokens->table[i];
-      retval++;
-    }
-  }
-
-  return retval;
-}
-
-int dedup_files(char **files, int nfiles)
-{
-  int i;
-  int j;
-
+  int fok;
   int diff;
+  int nnew;
+  int smallest;
 
+  if(nfiles > MAX_FILES) return nfiles;
+
+  qsort(tokens->table, tokens->ntokens, sizeof(*tokens->table), strcompar);
   qsort(files, nfiles, sizeof(*files), strcompar);
 
-  i = 0;
-  j = i + 1;
+  nnew = 0;
+  smallest = tokens->ntokens > nfiles ? nfiles : tokens->ntokens;
 
-  while(j < nfiles) {
-    diff = strcmp(files[i], files[j]);
-    if(j < MAX_FILES && !diff) {
-      files[i] = files[j];
-      files[j] = files[j + 1];
-      nfiles--;
+  for(i = 0; i < smallest; i++) {
+    diff = strcmp(files[i], tokens->table[i]);
+    fok = access(tokens->table[i], F_OK);
+    if(diff && !fok) {
+      files[nfiles + i] = tokens->table[i];
+      nnew++;
+    } else if(fok) {
+      warn(WARN_NENT, tokens->table[i]);
     }
-
-    i++;
-    j = i + 1;
   }
+
+  nfiles += nnew;
+  if(nfiles > MAX_FILES) {
+    return nfiles;
+  } else if(tokens->ntokens > smallest &&
+            tokens->ntokens + nfiles - nnew > MAX_FILES)
+  {
+    return tokens->ntokens + nfiles - nnew;
+  }
+
+  for(i = nnew; tokens->ntokens > smallest && i < tokens->ntokens; i++) {
+    fok = access(tokens->table[i], F_OK);
+    if(!fok) {
+      files[nfiles + i] = tokens->table[i];
+      nnew++;
+    } else if(fok) {
+      warn(WARN_NENT, tokens->table[i]);
+    }
+  }
+
+  nfiles += nnew;
 
   return nfiles;
 }
