@@ -27,6 +27,7 @@
 #include <errno.h>
 #include <error.h>
 #include <unistd.h>
+#include <libgen.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -84,6 +85,7 @@ void tokens_truncate(struct Tokens *tokens)
   int i;
 
   for(i = 0; i < tokens->ntokens; i++) {
+    tokens->table[i] = basename(tokens->table[i]);
     len = strlen(tokens->table[i]);
     if(len > MAX_FILENAME_LEN) tokens->table[i] += len - MAX_FILENAME_LEN + 1;
   }
