@@ -75,8 +75,7 @@ void warn(const char *, const char *);
 void print_usage(const char *, const char *);
 void args_tokenize(char *, struct Tokens *);
 void tokens_truncate(struct Tokens *);
-int verify_files(char **, char **, int);
-int fix_missing(struct Tokens *, char **, int);
-int dedup_files(char **, int);
+int add_args(char **, char **, int);
+int add_tokens(struct Tokens *, char **, int);
 
 #endif

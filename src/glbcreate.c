@@ -118,9 +118,8 @@ int main(int argc, char **argv)
 
   arg_mask = args_parse(argc, argv, &filename, &tokens);
 
-  num_files = verify_files(&argv[optind], files, argc - optind);
-  num_files = fix_missing(&tokens, files, num_files);
-  num_files = dedup_files(files, num_files);
+  num_files = add_args(&argv[optind], files, argc - optind);
+  num_files = add_tokens(&tokens, files, num_files);
 
   tokens_truncate(&tokens);
 
