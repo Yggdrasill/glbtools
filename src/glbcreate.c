@@ -134,7 +134,7 @@ int main(int argc, char **argv)
 
   glb = fopen(filename, "wb");
   if(!glb) {
-    die(filename, __LINE__);
+    die(filename, __FILE__, __LINE__);
   }
   wd = fileno(glb);
 
@@ -144,14 +144,14 @@ int main(int argc, char **argv)
 
   ffat = malloc(sizeof(*ffat) * num_files);
   if(!ffat) {
-    die(DIE_NOMEM, __LINE__);
+    die(DIE_NOMEM, __FILE__, __LINE__);
   }
 
   offset = num_files * FAT_SIZE + FAT_SIZE;
 
   for(int i = 0; i < num_files; i++) {
     if(fat_entry_init(&ffat[i], files[i], offset) ) {
-      die(files[i], __LINE__);
+      die(files[i], __FILE__, __LINE__);
     }
 
     if(ffat[i].length > largest) largest = ffat[i].length;
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
 
     bytes = io_write_fat(&temp, wd);
     if(bytes == -1) {
-      die(filename, __LINE__);
+      die(filename, __FILE__, __LINE__);
     } else if(bytes != FAT_SIZE) {
       warn(WARN_WNEL, ffat[i].filename);
     }
@@ -176,19 +176,19 @@ int main(int argc, char **argv)
 
   buffer = malloc(largest);
   if(!buffer) {
-    die(DIE_NOMEM, __LINE__);
+    die(DIE_NOMEM, __FILE__, __LINE__);
   }
 
   for(int i = 0; i < num_files; i++) {
     input = fopen(files[i], "rb");
     if(!input) {
-      die(files[i], __LINE__);
+      die(files[i], __FILE__, __LINE__);
     }
     rd = fileno(input);
 
     bytes = read(rd, buffer, ffat[i].length);
     if(bytes == -1) {
-      die(files[i], __LINE__);
+      die(files[i], __FILE__, __LINE__);
     } else if(bytes != ffat[i].length) {
       warn(WARN_RNEL, files[i]);
     }
@@ -199,7 +199,7 @@ int main(int argc, char **argv)
 
     bytes = write(wd, buffer, ffat[i].length);
     if(bytes == -1) {
-      die(filename, __LINE__);
+      die(filename, __FILE__, __LINE__);
     } else if(bytes != ffat[i].length) {
       warn(WARN_WNEL, filename);
     }

@@ -94,18 +94,18 @@ int main(int argc, char **argv)
 
   glb = fopen(argv[optind], "rb");
   if(!glb) {
-    die(argv[optind], __LINE__);
+    die(argv[optind], __FILE__, __LINE__);
   }
   rd = fileno(glb);
 
   buffer = malloc(FAT_SIZE);
   if(!buffer) {
-    die(DIE_NOMEM, __LINE__);
+    die(DIE_NOMEM, __FILE__, __LINE__);
   }
 
   bytes = pread(rd, buffer, FAT_SIZE, 0);
   if(bytes == -1) {
-    die(argv[optind], __LINE__);
+    die(argv[optind], __FILE__, __LINE__);
   } else if(bytes != FAT_SIZE) {
     term(ERR_CRHFAT);
   } else if(strncmp(RAW_HEADER, buffer, INT32_SIZE) ) {
@@ -121,17 +121,17 @@ int main(int argc, char **argv)
 
   ffat = fat_array_init(hfat.offset);
   if(!ffat) {
-    die(DIE_NOMEM, __LINE__);
+    die(DIE_NOMEM, __FILE__, __LINE__);
   }
 
   buffer = realloc(buffer, hfat.offset * FAT_SIZE);
   if(!buffer) {
-    die(DIE_NOMEM, __LINE__);
+    die(DIE_NOMEM, __FILE__, __LINE__);
   }
 
   bytes = pread(rd, buffer, hfat.offset * FAT_SIZE, FAT_SIZE);
   if(bytes == -1) {
-    die(argv[optind], __LINE__);
+    die(argv[optind], __FILE__, __LINE__);
   } else if(bytes != hfat.offset * FAT_SIZE) {
     term(ERR_CRFFAT);
   }
@@ -147,7 +147,7 @@ int main(int argc, char **argv)
     largest = fat_find_largest(ffat, hfat.offset);
     buffer = realloc(buffer, largest->length);
     if(!buffer) {
-      die(argv[optind], __LINE__);
+      die(DIE_NOMEM, __FILE__, __LINE__);
     }
 
     for(i = 0; i < hfat.offset; i++) {
@@ -156,20 +156,20 @@ int main(int argc, char **argv)
 
       bytes = pread(rd, buffer, ffat[i].length, ffat[i].offset);
       if(bytes == -1) {
-        die(argv[optind], __LINE__);
+        die(argv[optind], __FILE__, __LINE__);
       } else if (bytes != ffat[i].length) {
         warn(WARN_RNEL, ffat[i].filename);
       }
 
       out = fopen(ffat[i].filename, "wb");
-      if(!out) die(ffat[i].filename, __LINE__);
+      if(!out) die(ffat[i].filename, __FILE__, __LINE__);
       wd = fileno(out);
 
       if(ffat[i].flags) decrypt_file(&state, buffer, ffat[i].length);
 
       bytes = write(wd, buffer, ffat[i].length);
       if(bytes == -1) {
-        die(ffat[i].filename, __LINE__);
+        die(ffat[i].filename, __FILE__, __LINE__);
       } else if(bytes != ffat[i].length) {
         warn(WARN_WNEL, ffat[i].filename);
       }
