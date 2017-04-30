@@ -146,7 +146,7 @@ int main(int argc, char **argv)
 
     largest = fat_find_largest(ffat, hfat.offset);
     buffer = realloc(buffer, largest->length);
-    if(!buffer) {
+    if(!buffer && largest->length) {
       die(DIE_NOMEM, __FILE__, __LINE__);
     }
 
