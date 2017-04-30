@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <search.h>
 
+#include <libgen.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -79,6 +80,7 @@ int fat_entry_init(struct FATable *fat, char *path, uint32_t offset)
   fat->offset = offset;
   fat->length = st.st_size;
 
+  path = basename(path);
   len = strlen(path);
   if(len > MAX_FILENAME_LEN) path += len - MAX_FILENAME_LEN + 1;
 
