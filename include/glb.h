@@ -69,7 +69,7 @@ enum ARGS {
 };
 
 int strcompar(const void *, const void *);
-void die(const char *, unsigned int);
+void die(const char *, const char *, unsigned int);
 void term(const char *);
 void warn(const char *, const char *);
 void print_usage(const char *, const char *);

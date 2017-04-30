@@ -37,9 +37,9 @@ int strcompar(const void *s1, const void *s2)
   return strcmp(*(char **)s1, *(char **)s2);
 }
 
-void die(const char *str, unsigned int linenum)
+void die(const char *str, const char *file, unsigned int linenum)
 {
-  error_at_line(errno, errno, __FILE__, linenum, "%s", str);
+  error_at_line(errno, errno, file, linenum, "%s", str);
 }
 
 void term(const char *str)
