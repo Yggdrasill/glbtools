@@ -104,9 +104,10 @@ int main(int argc, char **argv)
   size_t offset;
   size_t bytes;
 
+  uint32_t nfiles;
+
   int rd, wd;
   int arg_mask;
-  int num_files;
 
   filename = NULL;
   largest = 0;
@@ -118,14 +119,14 @@ int main(int argc, char **argv)
 
   arg_mask = args_parse(argc, argv, &filename, &tokens);
 
-  num_files = add_args(&argv[optind], files, argc - optind);
-  num_files = add_tokens(&tokens, files, num_files);
+  nfiles = add_args(&argv[optind], files, argc - optind);
+  nfiles = add_tokens(&tokens, files, nfiles);
 
   tokens_truncate(&tokens);
 
-  if(num_files <= 0) {
+  if(nfiles <= 0) {
     term(ERR_NOFILE);
-  } else if(num_files > MAX_FILES) {
+  } else if(nfiles > MAX_FILES) {
     term(ERR_TMFILE);
   }
 
@@ -137,18 +138,18 @@ int main(int argc, char **argv)
   }
   wd = fileno(glb);
 
-  hfat.offset = num_files;
+  hfat.offset = nfiles;
   encrypt_fat_single(&state, &hfat);
   io_write_fat(&hfat, wd);
 
-  ffat = malloc(sizeof(*ffat) * num_files);
+  ffat = malloc(sizeof(*ffat) * nfiles);
   if(!ffat) {
     die(DIE_NOMEM, __FILE__, __LINE__);
   }
 
-  offset = num_files * FAT_SIZE + FAT_SIZE;
+  offset = nfiles * FAT_SIZE + FAT_SIZE;
 
-  for(int i = 0; i < num_files; i++) {
+  for(int i = 0; i < nfiles; i++) {
     if(fat_entry_init(&ffat[i], files[i], offset) ) {
       die(files[i], __FILE__, __LINE__);
     }
@@ -158,10 +159,10 @@ int main(int argc, char **argv)
   }
 
   if(arg_mask & (ARGS_ENCA | ARGS_ENCS) ) {
-    fat_flag_encryption(ffat, &tokens, num_files, arg_mask);
+    fat_flag_encryption(ffat, &tokens, nfiles, arg_mask);
   }
 
-  for(int i = 0; i < num_files; i++) {
+  for(int i = 0; i < nfiles; i++) {
     memcpy(&temp, &ffat[i], sizeof(ffat[i]) );
     encrypt_fat_single(&state, &temp);
 
@@ -178,7 +179,7 @@ int main(int argc, char **argv)
     die(DIE_NOMEM, __FILE__, __LINE__);
   }
 
-  for(int i = 0; i < num_files; i++) {
+  for(int i = 0; i < nfiles; i++) {
     input = fopen(files[i], "rb");
     if(!input) {
       die(files[i], __FILE__, __LINE__);
