@@ -20,12 +20,12 @@
 #define POSIXLY_CORRECT
 #define _POSIX_C_SOURCE 200809L
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <stdint.h>
-#include <search.h>
 
+#include <search.h>
 #include <libgen.h>
 #include <sys/types.h>
 #include <sys/stat.h>
