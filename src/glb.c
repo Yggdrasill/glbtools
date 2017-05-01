@@ -94,7 +94,7 @@ void tokens_truncate(struct Tokens *tokens)
   return;
 }
 
-int add_args(char **argv, char **files, uint32_t nfiles)
+uint32_t add_args(char **argv, char **files, uint32_t nfiles)
 {
   uint32_t i;
 
@@ -112,7 +112,7 @@ int add_args(char **argv, char **files, uint32_t nfiles)
   return nfiles;
 }
 
-int add_tokens(struct Tokens *tokens, char **files, uint32_t nfiles)
+uint32_t add_tokens(struct Tokens *tokens, char **files, uint32_t nfiles)
 {
   uint32_t i;
   uint32_t smallest;
