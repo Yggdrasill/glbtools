@@ -21,12 +21,11 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
-#include <unistd.h>
-#include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <errno.h>
-#include <error.h>
+#include <stdint.h>
+
+#include <unistd.h>
 
 #include "../include/glb.h"
 #include "../include/fat.h"
