@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include <errno.h>
 #include <error.h>
@@ -82,7 +83,7 @@ void tokens_truncate(struct Tokens *tokens)
 {
   size_t len;
 
-  int i;
+  uint32_t i;
 
   for(i = 0; i < tokens->ntokens; i++) {
     tokens->table[i] = basename(tokens->table[i]);
@@ -93,9 +94,9 @@ void tokens_truncate(struct Tokens *tokens)
   return;
 }
 
-int add_args(char **argv, char **files, int nfiles)
+int add_args(char **argv, char **files, uint32_t nfiles)
 {
-  int i;
+  uint32_t i;
 
   if(nfiles > MAX_FILES) return nfiles;
 
@@ -111,13 +112,14 @@ int add_args(char **argv, char **files, int nfiles)
   return nfiles;
 }
 
-int add_tokens(struct Tokens *tokens, char **files, int nfiles)
+int add_tokens(struct Tokens *tokens, char **files, uint32_t nfiles)
 {
-  int i;
+  uint32_t i;
+  uint32_t smallest;
+  uint32_t nnew;
+
   int fok;
   int diff;
-  int nnew;
-  int smallest;
 
   if(nfiles > MAX_FILES) return nfiles;
 

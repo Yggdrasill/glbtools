@@ -102,9 +102,10 @@ int main(int argc, char **argv)
 
   size_t largest;
   size_t offset;
-  size_t bytes;
+  ssize_t bytes;
 
   uint32_t nfiles;
+  uint32_t i;
 
   int rd, wd;
   int arg_mask;
@@ -149,7 +150,7 @@ int main(int argc, char **argv)
 
   offset = nfiles * FAT_SIZE + FAT_SIZE;
 
-  for(int i = 0; i < nfiles; i++) {
+  for(i = 0; i < nfiles; i++) {
     if(fat_entry_init(&ffat[i], files[i], offset) ) {
       die(files[i], __FILE__, __LINE__);
     }
@@ -162,7 +163,7 @@ int main(int argc, char **argv)
     fat_flag_encryption(ffat, &tokens, nfiles, arg_mask);
   }
 
-  for(int i = 0; i < nfiles; i++) {
+  for(i = 0; i < nfiles; i++) {
     memcpy(&temp, &ffat[i], sizeof(ffat[i]) );
     encrypt_fat_single(&state, &temp);
 
@@ -179,7 +180,7 @@ int main(int argc, char **argv)
     die(DIE_NOMEM, __FILE__, __LINE__);
   }
 
-  for(int i = 0; i < nfiles; i++) {
+  for(i = 0; i < nfiles; i++) {
     input = fopen(files[i], "rb");
     if(!input) {
       die(files[i], __FILE__, __LINE__);

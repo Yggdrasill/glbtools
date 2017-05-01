@@ -56,7 +56,7 @@
 
 struct Tokens {
   char *table[MAX_FILES];
-  size_t ntokens;
+  uint32_t ntokens;
 };
 
 enum ARGS {
@@ -75,7 +75,7 @@ void warn(const char *, const char *);
 void print_usage(const char *, const char *);
 void args_tokenize(char *, struct Tokens *);
 void tokens_truncate(struct Tokens *);
-int add_args(char **, char **, int);
-int add_tokens(struct Tokens *, char **, int);
+int add_args(char **, char **, uint32_t);
+int add_tokens(struct Tokens *, char **, uint32_t);
 
 #endif
