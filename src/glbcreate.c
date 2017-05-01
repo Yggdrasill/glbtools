@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 
   tokens_truncate(&tokens);
 
-  if(nfiles <= 0) {
+  if(!nfiles) {
     term(ERR_NOFILE);
   } else if(nfiles > MAX_FILES) {
     term(ERR_TMFILE);

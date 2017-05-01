@@ -97,19 +97,22 @@ void tokens_truncate(struct Tokens *tokens)
 uint32_t add_args(char **argv, char **files, uint32_t nfiles)
 {
   uint32_t i;
+  uint32_t retval;
 
   if(nfiles > MAX_FILES) return nfiles;
+
+  retval = 0;
 
   for(i = 0; i < MAX_FILES && i < nfiles && nfiles; i++) {
     if(access(argv[i], F_OK) ) {
       warn(WARN_NENT, argv[i]);
-      nfiles--;
     } else {
       files[i] = argv[i];
+      retval++;
     }
   }
 
-  return nfiles;
+  return retval;
 }
 
 uint32_t add_tokens(struct Tokens *tokens, char **files, uint32_t nfiles)
