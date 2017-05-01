@@ -30,8 +30,7 @@
 #include "../include/glb.h"
 #include "../include/fat.h"
 #include "../include/crypt.h"
-
-const char *DEFAULT_NAME = "output.glb";
+#include "../include/glbcreate.h"
 
 int args_parse(int argc, char **argv, char **str, struct Tokens *tokens)
 {
