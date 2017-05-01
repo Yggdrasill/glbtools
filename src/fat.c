@@ -116,11 +116,14 @@ void fat_flag_extraction(struct FATable *ffat,
   char **result;
   char *str;
 
+  size_t ntokens;
+
   end = ffat + nfiles;
+  ntokens = tokens->ntokens;
 
   for( ; ffat < end; ffat++) {
     str = ffat->filename;
-    result = lfind(&str, tokens->table, &tokens->ntokens,
+    result = lfind(&str, tokens->table, &ntokens,
                   sizeof(*tokens->table), strcompar);
 
     if(result || (arg_mask & ARGS_EXTA) ) {
@@ -143,11 +146,14 @@ void fat_flag_encryption(struct FATable *ffat,
   char **result;
   char *str;
 
+  size_t ntokens;
+
   end = ffat + nfiles;
+  ntokens = tokens->ntokens;
 
   for( ; ffat < end; ffat++) {
     str = ffat->filename;
-    result = lfind(&str, tokens->table, &tokens->ntokens,
+    result = lfind(&str, tokens->table, &ntokens,
                   sizeof(*tokens->table), strcompar);
 
     if(result || (arg_mask & ARGS_ENCA) ) {
