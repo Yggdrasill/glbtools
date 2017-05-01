@@ -90,11 +90,11 @@ int main(int argc, char **argv)
   FILE *glb;
   FILE *input;
 
-  struct State state = {0};
-  struct Tokens tokens = {0};
-  struct FATable hfat = {0};
-  struct FATable temp = {0};
-  struct FATable *ffat = {0};
+  struct State state;
+  struct Tokens tokens;
+  struct FATable hfat;
+  struct FATable temp;
+  struct FATable *ffat;
 
   char *files[MAX_FILES];
   char *buffer;
@@ -112,6 +112,9 @@ int main(int argc, char **argv)
 
   filename = NULL;
   largest = 0;
+
+  memset(&hfat, 0, sizeof(hfat) );
+  memset(&tokens, 0, sizeof(tokens) );
 
   if(argc < 2) {
     print_usage(argv[0], HELP_CREATE);

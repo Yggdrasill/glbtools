@@ -69,11 +69,11 @@ int main(int argc, char **argv)
   FILE *glb;
   FILE *out;
 
-  struct FATable hfat = {0};
-  struct FATable *ffat = {0};
-  struct FATable *largest = {0};
-  struct State state = {0};
-  struct Tokens tokens = {0};
+  struct FATable hfat;
+  struct FATable *ffat;
+  struct FATable *largest;
+  struct State state;
+  struct Tokens tokens;
 
   char *buffer;
 
