@@ -52,8 +52,6 @@ ssize_t fat_io_write(struct FATable *fat, int fd)
 {
   char buffer[FAT_SIZE];
 
-  ssize_t retval;
-
   int pos;
 
   pos = 0;
