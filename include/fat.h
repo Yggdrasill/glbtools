@@ -31,6 +31,7 @@ struct FATable {
 };
 
 char *buffer_copy_fat(struct FATable *, char *);
+ssize_t fat_io_write(struct FATable *, int);
 struct FATable *fat_array_init(uint32_t);
 void fat_array_free(struct FATable **);
 int fat_entry_init(struct FATable *, char *, uint32_t);

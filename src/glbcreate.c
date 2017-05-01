@@ -62,28 +62,6 @@ int args_parse(int argc, char **argv, char **str, struct Tokens *tokens)
   return mask;
 }
 
-ssize_t io_write_fat(struct FATable *fat, int fd)
-{
-  char buffer[FAT_SIZE];
-
-  ssize_t retval;
-
-  int pos;
-
-  pos = 0;
-
-  memcpy(buffer, &fat->flags, INT32_SIZE);
-  pos += INT32_SIZE;
-  memcpy(buffer + pos, &fat->offset, INT32_SIZE);
-  pos += INT32_SIZE;
-  memcpy(buffer + pos, &fat->length, INT32_SIZE);
-  pos += INT32_SIZE;
-  memcpy(buffer + pos, fat->filename, MAX_FILENAME_LEN);
-  pos += MAX_FILENAME_LEN;
-
-  return write(fd, buffer, FAT_SIZE);
-}
-
 int main(int argc, char **argv)
 {
   FILE *glb;
@@ -143,7 +121,7 @@ int main(int argc, char **argv)
 
   hfat.offset = nfiles;
   encrypt_fat_single(&state, &hfat);
-  io_write_fat(&hfat, wd);
+  fat_io_write(&hfat, wd);
 
   ffat = malloc(sizeof(*ffat) * nfiles);
   if(!ffat) {
@@ -169,7 +147,7 @@ int main(int argc, char **argv)
     memcpy(&temp, &ffat[i], sizeof(ffat[i]) );
     encrypt_fat_single(&state, &temp);
 
-    bytes = io_write_fat(&temp, wd);
+    bytes = fat_io_write(&temp, wd);
     if(bytes == -1) {
       die(filename, __FILE__, __LINE__);
     } else if(bytes != FAT_SIZE) {
