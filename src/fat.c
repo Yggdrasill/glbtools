@@ -27,6 +27,7 @@
 
 #include <search.h>
 #include <libgen.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -45,6 +46,28 @@ char *buffer_copy_fat(struct FATable *fat, char *buffer)
   buffer += MAX_FILENAME_LEN;
 
   return buffer;
+}
+
+ssize_t fat_io_write(struct FATable *fat, int fd)
+{
+  char buffer[FAT_SIZE];
+
+  ssize_t retval;
+
+  int pos;
+
+  pos = 0;
+
+  memcpy(buffer, &fat->flags, INT32_SIZE);
+  pos += INT32_SIZE;
+  memcpy(buffer + pos, &fat->offset, INT32_SIZE);
+  pos += INT32_SIZE;
+  memcpy(buffer + pos, &fat->length, INT32_SIZE);
+  pos += INT32_SIZE;
+  memcpy(buffer + pos, fat->filename, MAX_FILENAME_LEN);
+  pos += MAX_FILENAME_LEN;
+
+  return write(fd, buffer, FAT_SIZE);
 }
 
 struct FATable *fat_array_init(uint32_t nfiles)

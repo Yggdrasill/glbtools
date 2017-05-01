@@ -23,6 +23,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <unistd.h>
+
 #include "../include/glb.h"
 #include "../include/fat.h"
 #include "../include/crypt.h"
